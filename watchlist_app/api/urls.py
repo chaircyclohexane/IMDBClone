@@ -1,7 +1,7 @@
 from django.urls import path, include
 
 from watchlist_app.models import Review
-from .views import ReviewDetail, ReviewDetailGonchu, ReviewListGonchu, StreamPlatformVSGonchu, movie_detail, movie_list, MovieListAV, MovieDetailAV , StreamPlatformAV, WatchListAV, WatchDetailAV, StreamPlatformDetailAV,ReviewList, ReviewCreate, StreamPlatformVS
+from .views import ReviewDetail, ReviewDetailGonchu, ReviewListGonchu, StreamPlatformVSGonchu, movie_detail, movie_list, MovieListAV, MovieDetailAV , StreamPlatformAV, WatchListAV, WatchDetailAV, StreamPlatformDetailAV,ReviewList, ReviewCreate, StreamPlatformVS, UserReview, WatchList
 from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()
@@ -24,6 +24,9 @@ urlpatterns = [
     path('review',ReviewListGonchu.as_view(),name='review-list'),
     path('review/<int:pk>',ReviewDetailGonchu.as_view(),name='review-detail'),
     path('stream/<int:pk>/review-create',ReviewCreate.as_view(), name='review-create'),
+    path('reviews/<str:username>/',UserReview.as_view(),name='user-review-detail'),
+    path('reviews/',UserReview.as_view(),name='user-review-detailfff'),
+    path('new-list/',WatchList.as_view(),name='watch-list'),
     path('',include(router.urls))
 ]
 

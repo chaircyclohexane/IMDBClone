@@ -15,6 +15,8 @@ from watchlist_app.models import Review
 from watchlist_app.api.permissions import IsAdminOrReadOnly, IsReviewUserOrReadOnly
 from rest_framework.throttling import UserRateThrottle, AnonRateThrottle, ScopedRateThrottle
 from .throttling import ReviewCreateThrottle,ReviewListThrottle
+import django_filters.rest_framework
+from rest_framework import filters
 
 
 @api_view(['GET','POST'])
@@ -213,6 +215,8 @@ class ReviewListGonchu(generics.ListCreateAPIView):
     serializer_class = ReviewSerializer
     permission_classes = [IsAuthenticated]
     throttle_classes = [ReviewListThrottle,AnonRateThrottle]
+    filter_backends = [django_filters.rest_framework.DjangoFilterBackend]
+    filterset_fields = ['review_user__username','active']
 
 class ReviewDetailGonchu(generics.RetrieveUpdateDestroyAPIView):
     queryset = Review.objects.all()
@@ -273,3 +277,19 @@ class StreamPlatformVSGonchu(viewsets.ModelViewSet):
     queryset = StreamPlatform.objects.all()
     serializer_class = StreamPlatformSerializer
     permission_classes  = [IsAdminOrReadOnly]
+
+class UserReview(generics.ListAPIView):
+
+    serializer_class = ReviewSerializer
+
+    def get_queryset(self):
+        username = self.request.query_params.get('username',None)
+        if username is None:
+            username = self.kwargs['username']
+        return Review.objects.filter(review_user__username=username)
+
+class WatchList(generics.ListAPIView):
+    queryset = Watchlist.objects.all()
+    serializer_class = WatchListSerializer
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['^title','platform__name']
